@@ -12,34 +12,27 @@ export default {
 			],
 		});
   },
-  async updatePackagePrice(pack: Package, newPriceCents: number, municipalityName?: string) {
+  async updatePackagePrice(pack: Package, newPriceCents: number, municipalityName?: string): Promise<Package> {
     try {
       const newPackage = await sequelizeConnection.transaction(async t => {
 
         let municipalityId: number | null = null;
 
         if (!!municipalityName) {
-
           const foundMunicipality = await Municipality.findOne({ where: { name: municipalityName } });
-
-
           if (!foundMunicipality) throw new Error('Not found');
           municipalityId = foundMunicipality.id
 
-          const foundMunicipalityPackage = await MunicipalityPackage.findOrCreate({ 
+          const foundMunicipalityPackage = await MunicipalityPackage.findOrCreate({
               where: { municipalityId, packageId: pack.id }, 
               defaults: { priceCents: newPriceCents }
             })
             
-            if (foundMunicipalityPackage instanceof MunicipalityPackage) {
-              //todo: update foundMunicipalityPackage with priceCents
-              console.log(foundMunicipalityPackage);
-              foundMunicipalityPackage.priceCents = newPriceCents
-              foundMunicipalityPackage.save({ transaction: t });
+            if (foundMunicipalityPackage[0].priceCents !== newPriceCents) {
+              foundMunicipalityPackage[0].priceCents = newPriceCents;
+              await foundMunicipalityPackage[0].save({ transaction: t });
             }
         } 
-
-        
 
         await Price.create({
           packageId: pack.id,
@@ -49,7 +42,8 @@ export default {
 
         if (!municipalityName) pack.priceCents = newPriceCents;
 
-        return pack.save({ transaction: t });
+        return await pack.save({ transaction: t });
+
       });
 
       return newPackage;

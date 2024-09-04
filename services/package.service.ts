@@ -57,7 +57,7 @@ export default {
     }
   },
 
-	async priceFor(municipalityName: string): Promise<Array<{municipality: string, name: string, priceCents: number}>> {
+	async priceFor(municipalityName: string): Promise<{municipality: string, name: string, priceCents: number}[]> {
     const municipalityPackages = await MunicipalityPackage.findAll({
       attributes: ['priceCents'],
       include: [
@@ -75,7 +75,7 @@ export default {
 
     return municipalityPackages.map(municipalityPackage => {
       const {priceCents, pack, municipality} = municipalityPackage;
-      return {municipality: municipality?.name ?? '', name: pack?.name ?? '', priceCents}
+      return {municipality: municipality?.name ?? 'Global', name: pack?.name ?? '', priceCents}
     })
 	},
 };

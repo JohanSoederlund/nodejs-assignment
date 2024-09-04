@@ -1,7 +1,7 @@
 import {type Association, type CreationOptional, DataTypes, type ForeignKey, type InferAttributes, type InferCreationAttributes, Model, type NonAttribute} from 'sequelize';
 import {sequelizeConnection} from '../db/config';
-import { type Package} from './package';
-import { type Municipality} from './municipality';
+import { type Package } from './package';
+import { type Municipality } from './municipality';
 
 class MunicipalityPackage extends Model<InferAttributes<MunicipalityPackage>, InferCreationAttributes<MunicipalityPackage>> {
 	declare static associations: {

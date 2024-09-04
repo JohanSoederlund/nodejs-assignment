@@ -17,7 +17,6 @@ describe('PackageService', () => {
 	afterAll(async () => {
 		await db.close();
 	});
-
 	it('Updates the current price of the provided package', async () => {
 		const pack = await Package.create({ name: 'Dunderhonung', priceCents: 0 });
 

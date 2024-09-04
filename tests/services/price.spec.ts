@@ -73,6 +73,8 @@ describe('PriceService', () => {
       [municipality2.name]: [30_00, 100_00],
     });
 
-    // Add some assertions here!
+    expect(await PriceService.getPriceHistory(basic.name, 2020, 'unknown')).toStrictEqual({});
+    expect(await PriceService.getPriceHistory(basic.name, 2019, municipality2.name)).toStrictEqual({});
+    expect(await PriceService.getPriceHistory('premium', 2020, municipality2.name)).toStrictEqual({});
   })
 });

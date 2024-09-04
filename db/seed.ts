@@ -32,12 +32,14 @@ export const seedDb = async () => {
 	], {validate: true});
 
 	await Price.bulkCreate([
+		{priceCents: 18_990, packageId: plus.id, municipalityId: goteborg.id},
 		{priceCents: 19_990, packageId: plus.id},
 		{priceCents: 29_900, packageId: plus.id},
 		{priceCents: 39_900, packageId: plus.id},
 	], {validate: true});
 
 	await Price.bulkCreate([
+		{priceCents: 45_000, packageId: premium.id, municipalityId: stockholm.id},
 		{priceCents: 55_000, packageId: premium.id},
 		{priceCents: 66_600, packageId: premium.id},
 		{priceCents: 77_700, packageId: premium.id},

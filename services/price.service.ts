@@ -2,7 +2,6 @@ import { Op, where, fn, col, literal } from 'sequelize'
 import { sequelizeConnection } from '../db/config'
 import { Package } from '../models/package'
 import { Municipality } from '../models/municipality'
-import { MunicipalityPackage } from '../models/municipality_package'
 import { Price } from '../models/price'
 
 export default {
@@ -51,7 +50,8 @@ export default {
     })
 
     let mappedPrices:{ [key: string]: number[] } = {}
-      
+    
+    //Remapping resource to preferred format decided in TDD
     prices.forEach(price => {
       const {priceCents, municipality} = price
       const municipalityKey = municipality?.name ?? 'Global'

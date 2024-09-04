@@ -13,11 +13,11 @@ export default {
 		});
   },
   async updatePackagePrice(pack: Package, newPriceCents: number, municipalityName?: string): Promise<Package> {
+    //updatePackagePrice also updates price history and municipality specific prices
     try {
       const newPackage = await sequelizeConnection.transaction(async t => {
 
         let municipalityId: number | null = null;
-        let priceCents = pack.priceCents
 
         if (!!municipalityName) {
           const foundMunicipality = await Municipality.findOne({ where: { name: municipalityName } });
@@ -61,19 +61,20 @@ export default {
     const municipalityPackages = await MunicipalityPackage.findAll({
       attributes: ['priceCents'],
       include: [
-      {
-        model: Package,
-        as: 'pack'
-      },
-      {
-        model: Municipality,
-        where: {name: municipalityName},
-        as: 'municipality'
-      }]
+        {
+          model: Package,
+          as: 'pack'
+        },
+        {
+          model: Municipality,
+          where: {name: municipalityName},
+          as: 'municipality'
+        }
+      ]
     })
 
     return municipalityPackages.map(municipalityPackage => {
-      const {priceCents, pack, municipality} = municipalityPackage
+      const {priceCents, pack, municipality} = municipalityPackage;
       return {municipality: municipality?.name ?? '', name: pack?.name ?? '', priceCents}
     })
 	},

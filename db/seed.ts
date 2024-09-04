@@ -1,7 +1,19 @@
 import {Package} from '../models/package';
 import {Price} from '../models/price';
+import {Municipality} from '../models/municipality';
+import { MunicipalityPackage } from '../models/municipality_package';
 
 export const seedDb = async () => {
+	await Municipality.destroy({truncate: true});
+
+	await Municipality.bulkCreate([
+		{name: 'Stockholm'},
+		{name: 'Göteborg'},
+	], {validate: true});
+
+	const stockholm = await Municipality.findOne({where: {name: 'Stockholm'}}) as Municipality;
+	const goteborg = await Municipality.findOne({where: {name: 'Göteborg'}}) as Municipality;
+
 	await Package.destroy({truncate: true});
 
 	await Package.bulkCreate([
@@ -30,5 +42,20 @@ export const seedDb = async () => {
 		{priceCents: 66_600, packageId: premium.id},
 		{priceCents: 77_700, packageId: premium.id},
 		{priceCents: 88_800, packageId: premium.id},
+	], {validate: true});
+
+	await MunicipalityPackage.bulkCreate([
+		{priceCents: 5100, municipalityId: stockholm.id, packageId: basic.id},
+		{priceCents: 5200, municipalityId: goteborg.id, packageId: basic.id},
+	], {validate: true});
+
+	await MunicipalityPackage.bulkCreate([
+		{priceCents: 18_990, municipalityId: stockholm.id, packageId: plus.id},
+		{priceCents: 17_990, municipalityId: goteborg.id, packageId: plus.id},
+	], {validate: true});
+
+	await MunicipalityPackage.bulkCreate([
+		{priceCents: 56_000, municipalityId: stockholm.id, packageId: premium.id},
+		{priceCents: 57_000, municipalityId: goteborg.id, packageId: premium.id},
 	], {validate: true});
 };

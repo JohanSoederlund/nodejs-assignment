@@ -17,6 +17,7 @@ export default {
       const newPackage = await sequelizeConnection.transaction(async t => {
 
         let municipalityId: number | null = null;
+        let priceCents = pack.priceCents
 
         if (!!municipalityName) {
           const foundMunicipality = await Municipality.findOne({ where: { name: municipalityName } });
@@ -25,25 +26,29 @@ export default {
 
           const foundMunicipalityPackage = await MunicipalityPackage.findOrCreate({
               where: { municipalityId, packageId: pack.id }, 
-              defaults: { priceCents: newPriceCents }
+              defaults: { priceCents: newPriceCents,  }
             })
             
-            if (foundMunicipalityPackage[0].priceCents !== newPriceCents) {
-              foundMunicipalityPackage[0].priceCents = newPriceCents;
-              await foundMunicipalityPackage[0].save({ transaction: t });
-            }
-        } 
+          if (foundMunicipalityPackage[0].priceCents !== newPriceCents) {
+            await Price.create({
+              packageId: pack.id,
+              municipalityId,
+              priceCents: foundMunicipalityPackage[0].priceCents,
+            }, { transaction: t });
 
-        await Price.create({
-          packageId: pack.id,
-          municipalityId,
-          priceCents: pack.priceCents,
-        }, { transaction: t });
-
-        if (!municipalityName) pack.priceCents = newPriceCents;
+            foundMunicipalityPackage[0].priceCents = newPriceCents;
+            await foundMunicipalityPackage[0].save({ transaction: t });
+          }
+        } else {
+          await Price.create({
+            packageId: pack.id,
+            municipalityId,
+            priceCents: pack.priceCents,
+          }, { transaction: t });
+          pack.priceCents = newPriceCents;
+        }
 
         return await pack.save({ transaction: t });
-
       });
 
       return newPackage;

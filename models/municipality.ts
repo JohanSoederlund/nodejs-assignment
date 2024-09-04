@@ -1,6 +1,7 @@
 import {type Association, type CreationOptional, DataTypes, type ForeignKey, type InferAttributes, type InferCreationAttributes, Model, type NonAttribute} from 'sequelize';
 import {sequelizeConnection} from '../db/config';
 import {MunicipalityPackage} from './municipality_package';
+import {Price} from './price';
 
 class Municipality extends Model<InferAttributes<Municipality>, InferCreationAttributes<Municipality>> {
 	declare static associations: {
@@ -38,6 +39,11 @@ Municipality.hasMany(MunicipalityPackage, {
 });
 
 MunicipalityPackage.belongsTo(Municipality, {
+	foreignKey: 'municipalityId',
+	as: 'municipality',
+});
+
+Price.belongsTo(Municipality, {
 	foreignKey: 'municipalityId',
 	as: 'municipality',
 });

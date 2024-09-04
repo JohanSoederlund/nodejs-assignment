@@ -53,4 +53,9 @@ MunicipalityPackage.belongsTo(Package, {
 	as: 'pack',
 });
 
+Price.belongsTo(Package, {
+	foreignKey: 'packageId',
+	as: 'pack',
+});
+
 export {Package};

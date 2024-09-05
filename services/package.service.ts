@@ -3,6 +3,8 @@ import {Package} from '../models/package';
 import {Municipality} from '../models/municipality';
 import {MunicipalityPackage} from '../models/municipality_package';
 import { Price } from '../models/price';
+import { createPackageAccess } from '../dal/package';
+import { IPackageExtended } from './models';
 
 export default {
   async getAll() {
@@ -12,6 +14,14 @@ export default {
 			],
 		});
   },
+
+  async updatePackagePrice(packageId: number, newPriceCents: number, municipalityId?: number): Promise<IPackageExtended> {
+    const dalPackage = createPackageAccess();
+    const extendedPackage: IPackageExtended = await dalPackage.updatePriceTransaction(packageId, newPriceCents, municipalityId);
+    return extendedPackage
+  },
+
+  /*
   async updatePackagePrice(pack: Package, newPriceCents: number, municipalityName?: string): Promise<Package> {
     //updatePackagePrice also updates price history and municipality specific prices
     try {
@@ -56,6 +66,7 @@ export default {
       throw new Error('Error handling the transaction');
     }
   },
+  */
 
 	async priceFor(municipalityName: string): Promise<{municipality: string, name: string, priceCents: number}[]> {
     const municipalityPackages = await MunicipalityPackage.findAll({

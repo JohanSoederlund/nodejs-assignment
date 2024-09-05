@@ -20,7 +20,7 @@ describe('PackageService', () => {
 	it('Updates the current price of the provided package', async () => {
 		const pack = await Package.create({ name: 'Dunderhonung', priceCents: 0 });
 
-		const newPackage = await packageService.updatePackagePrice(pack, 200_00);
+		const newPackage = await packageService.updatePackagePrice(pack.id, 200_00);
 
 		expect(newPackage.priceCents).toBe(200_00);
 	});
@@ -28,7 +28,7 @@ describe('PackageService', () => {
 	it('Stores the old price of the provided package in its price history', async () => {
     	const pack = await Package.create({ name: 'Dunderhonung', priceCents: 100_00 });
 
-		await packageService.updatePackagePrice(pack, 200_00);
+		await packageService.updatePackagePrice(pack.id, 200_00);
 
 		const priceHistory = await Price.findAll({ where: { packageId: pack.id } });
 
@@ -40,13 +40,13 @@ describe('PackageService', () => {
 		const municipality = await Municipality.create({name: 'Göteborg'});
 		const pack = await Package.create({name: 'Dunderhonung', priceCents: 0});
 
-		const responseUpdate = await packageService.updatePackagePrice(pack, 200_00, 'Göteborg');
+		const responseUpdate = await packageService.updatePackagePrice(pack.id, 200_00, municipality.id);
 		const response = await packageService.priceFor('Göteborg');
 
 		expect(response).toEqual([{municipality: 'Göteborg', name: 'Dunderhonung', priceCents: 200_00}]);
 		expect(responseUpdate.priceCents).toEqual(0);
 		
-		const responseUpdate2 = await packageService.updatePackagePrice(pack, 201_00, 'Göteborg');
+		const responseUpdate2 = await packageService.updatePackagePrice(pack.id, 201_00, municipality.id);
 		const response2 = await packageService.priceFor('Göteborg');
 
 		expect(response2).toEqual([{municipality: 'Göteborg', name: 'Dunderhonung', priceCents: 201_00}]);
@@ -59,9 +59,9 @@ describe('PackageService', () => {
 		const name = 'test1'
 		const pack = await Package.create({name, priceCents: 0});
 
-		await packageService.updatePackagePrice(pack, 201_00, municipality.name);
-		await packageService.updatePackagePrice(pack, 202_00, municipality2.name);
-		await packageService.updatePackagePrice(pack, 200_00);
+		await packageService.updatePackagePrice(pack.id, 201_00, municipality.id);
+		await packageService.updatePackagePrice(pack.id, 202_00, municipality2.id);
+		await packageService.updatePackagePrice(pack.id, 200_00);
 
 		const response = await packageService.priceFor(municipality.name);
 		const response2 = await packageService.priceFor(municipality2.name);
@@ -75,7 +75,7 @@ describe('PackageService', () => {
 		const pack = await Package.create({name, priceCents: 0});
 
 		try {
-			await packageService.updatePackagePrice(pack, 201_00, 'Non existing municipality')
+			await packageService.updatePackagePrice(pack.id, 201_00, 99999999)
 		  } catch (e: any) {
 			expect(e.message).toEqual('Error handling the transaction');
 		  }
